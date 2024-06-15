@@ -1,0 +1,62 @@
+before:
+  hooks:
+  - go mod tidy
+  - go generate ./...
+builds:
+- env:
+  - CGO_ENABLED=0
+  goos:
+  - linux
+  - windows
+  - darwin
+  main: main.go
+  goarch:
+  - amd64
+  binary: eachdigital
+  id: eachdigital
+  ldflags:
+  - -s -w
+    -X "github.com/gkwa/eachdigital/version.Version={{ .Version }}"
+    -X "github.com/gkwa/eachdigital/version.Date={{ .CommitDate }}"
+    -X "github.com/gkwa/eachdigital/version.GoVersion={{ .Env.GOVERSION }}"
+    -X "github.com/gkwa/eachdigital/version.ShortGitSHA={{ .ShortCommit }}"
+    -X "github.com/gkwa/eachdigital/version.FullGitSHA={{ .FullCommit }}"
+archives:
+- format: tar.gz
+  name_template: |-
+    eachdigital_ {{- title .Os }}_ {{- if eq .Arch "amd64" }}x86_64
+                               {{- else if eq .Arch "386" }}i386
+                               {{- else }}
+                               {{ .Arch }}
+                               {{ end }}
+                               {{- if .Arm }}v{{ .Arm }}{{ end }}
+  format_overrides:
+  - goos: windows
+    format: zip
+checksum:
+  name_template: checksums.txt
+snapshot:
+  name_template: '{{ incpatch .Version }}-next'
+changelog:
+  sort: asc
+  filters:
+    exclude:
+    - '^docs:'
+    - '^test:'
+brews:
+- name: eachdigital
+  directory: Formula
+  homepage: https://github.com/gkwa/eachdigital
+  repository:
+    owner: gkwa
+    name: homebrew-tools
+    branch: main
+scoops:
+- name: eachdigital
+  homepage: https://github.com/gkwa/eachdigital
+  description: "Description of the eachdigital project"
+  license: MIT
+  repository:
+    owner: gkwa
+    name: scoop-bucket
+    branch: master
