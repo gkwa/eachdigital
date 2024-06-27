@@ -30,7 +30,8 @@ type Credentials struct {
 func ListTodaysEmails() {
 	srv, expiresIn := setupGmailService()
 
-	call := getTodaysEmailsCall(srv)
+	today := time.Now().Format("2006/01/02")
+	call := srv.Users.Messages.List("me").Q("after:" + today)
 
 	response, err := call.Do()
 	if err != nil {
@@ -69,11 +70,6 @@ func setupGmailService() (*gmail.Service, time.Duration) {
 	}
 
 	return srv, expiresIn
-}
-
-func getTodaysEmailsCall(srv *gmail.Service) *gmail.UsersMessagesListCall {
-	today := time.Now().Format("2006/01/02")
-	return srv.Users.Messages.List("me").Q("after:" + today)
 }
 
 func getOAuthConfig(credentialsFile string) *oauth2.Config {
