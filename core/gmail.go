@@ -28,23 +28,9 @@ type Credentials struct {
 }
 
 func ListTodaysEmails() {
-	credentialsFile := os.Getenv("EACHDIGITAL_CREDENTIALS_FILE")
-	if credentialsFile == "" {
-		log.Fatal("EACHDIGITAL_CREDENTIALS_FILE environment variable not set")
-	}
+	srv, expiresIn := setupGmailService()
 
-	config := getOAuthConfig(credentialsFile)
-
-	client, expiresIn := getClient(config)
-
-	srv, err := gmail.NewService(context.Background(), option.WithHTTPClient(client))
-	if err != nil {
-		log.Fatalf("Unable to retrieve Gmail client: %v", err)
-	}
-
-	today := time.Now().Format("2006/01/02")
-
-	call := srv.Users.Messages.List("me").Q("after:" + today)
+	call := getTodaysEmailsCall(srv)
 
 	response, err := call.Do()
 	if err != nil {
@@ -65,6 +51,29 @@ func ListTodaysEmails() {
 	}
 
 	fmt.Printf("Token valid for: %v\n", expiresIn.Round(time.Second))
+}
+
+func setupGmailService() (*gmail.Service, time.Duration) {
+	credentialsFile := os.Getenv("EACHDIGITAL_CREDENTIALS_FILE")
+	if credentialsFile == "" {
+		log.Fatal("EACHDIGITAL_CREDENTIALS_FILE environment variable not set")
+	}
+
+	config := getOAuthConfig(credentialsFile)
+
+	client, expiresIn := getClient(config)
+
+	srv, err := gmail.NewService(context.Background(), option.WithHTTPClient(client))
+	if err != nil {
+		log.Fatalf("Unable to retrieve Gmail client: %v", err)
+	}
+
+	return srv, expiresIn
+}
+
+func getTodaysEmailsCall(srv *gmail.Service) *gmail.UsersMessagesListCall {
+	today := time.Now().Format("2006/01/02")
+	return srv.Users.Messages.List("me").Q("after:" + today)
 }
 
 func getOAuthConfig(credentialsFile string) *oauth2.Config {
