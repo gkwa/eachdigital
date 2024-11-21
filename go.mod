@@ -9,7 +9,7 @@ require (
 	github.com/spf13/viper v1.19.0
 	github.com/taylormonacelli/goldbug v0.0.6
 	golang.org/x/oauth2 v0.24.0
-	google.golang.org/api v0.207.0
+	google.golang.org/api v0.208.0
 )
 
 require (
