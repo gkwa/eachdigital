@@ -11,7 +11,7 @@ require (
 	github.com/spf13/viper v1.20.1
 	github.com/taylormonacelli/goldbug v0.0.6
 	golang.org/x/oauth2 v0.30.0
-	google.golang.org/api v0.240.0
+	google.golang.org/api v0.241.0
 )
 
 require (
