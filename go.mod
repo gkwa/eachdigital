@@ -2,7 +2,7 @@ module github.com/gkwa/eachdigital
 
 go 1.25.8
 
-toolchain go1.26.6
+toolchain go1.27.0
 
 require (
 	github.com/go-git/go-git/v5 v5.19.2
